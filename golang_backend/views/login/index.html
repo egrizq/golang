@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/views/bootstrap/css/bootstrap.min.css"> 
+</head>
+<body>
+    <div class="container-fluid" style="padding-top: 15vh;">
+        <div class="row">
+            <div class="col-4"></div>
+
+            <div class="col-4 border p-5">
+                <div class="text-center h3">
+                    LOGIN
+                </div>
+                
+                <form action="/auth" method="post">
+                    <span>Username</span>
+                    <input class="form-control" type="text" name="username" required><br>
+                    <span>Password</span>
+                    <input class="form-control" type="password" name="password" required>
+    
+                    <div class="text-center p-3">
+                        <input class="btn btn-success col-12" value="Login" type="submit">
+                    </div>
+                </form>
+
+                <div class="text-center">
+                    <a href="/register" class="btn btn-warning col-11">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="views/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

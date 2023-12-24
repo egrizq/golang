@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/views/bootstrap/css/bootstrap.min.css"> 
+</head>
+<body>
+    <div class="container-fluid" style="padding-top: 10vh;">
+        <div class="row">
+            <div class="col-4"></div>
+
+            <div class="col-4 border p-5">
+                <div class="text-center h3">
+                    Register
+                </div>
+
+                <form action="/registerSubmit" method="post">
+                    <small>Username</small>
+                    <input class="form-control" type="text" name="username" placeholder="Password" required>
+
+                    <div class="pt-4">
+                        <small>Email</small>
+                        <input class="form-control" type="text" name="email" placeholder="Email" required>
+                    </div>
+
+                    <div class="pt-4">
+                        <small>Handphone</small>
+                        <input class="form-control" type="number" name="handphone" placeholder="Handphone" required>
+                    </div>
+
+                    <div class="pt-4">
+                        <small>Password</small>
+                        <input class="form-control" type="password" name="password" placeholder="Password" required>
+                    </div>
+
+                    <div class="pt-4 text-center">
+                        <input type="submit" name="register" class="btn btn-success col-md-4" value="Register">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="views/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

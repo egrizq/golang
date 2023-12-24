@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show</title>
+    <link rel="stylesheet" href="/views/bootstrap/css/bootstrap.min.css"> 
+</head>
+<body>
+    <div class="container-fluid" style="padding-top: 15vh;">
+        <div class="row">
+            <div class="col-3"></div>
+
+            <div class="col-6 text-center border p-3">
+                <table class="table">
+                    <thead>
+                        <tr> 
+                            <th>Id</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Handphone</th>
+                            <th>Password</th>
+                            <th>Option</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Rows}}
+                        <tr>
+                            <td>{{.Id}}</td>
+                            <td>{{.Username}}</td>
+                            <td>{{.Email}}</td>
+                            <td>{{.Handphone}}</td>
+                            <td>{{.Password}}</td>
+                            <td><a href="/delete?id={{.Id}}" class="btn btn-danger">Delete</a></td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+
+                <a href="/" class="btn btn-success">Back</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="views/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
