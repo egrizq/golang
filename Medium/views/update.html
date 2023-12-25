@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="/views/bootstrap/css/bootstrap.min.css"> 
+</head>
+
+<style>
+    body {
+        font-family: "cascadia mono";
+    }
+
+    .text {
+        color: black;
+    }
+
+    
+</style>
+
+<body>
+    <ul class="nav justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link text" href="/">For you</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text" href="/history">History</a>
+        </li>
+    </ul>
+
+    <div class="container-fluid" style="padding-top:8vh;">
+        <div class="row">
+            <div class="col-3"></div>
+
+            <div class="col-6">
+                <form action="/tweets/update" method="post">
+                    {{range .Rows}}
+                        <input type="hidden" name="id" value="{{.Id}}">
+
+                        <input class="form-control form-control-lg border-0" type="text" name="title" 
+                        placeholder="Title" value="{{.Title}}" required>
+                        
+                        <div class="mb-3 pt-3">
+                            <textarea class="form-control form-control-lg border-0" name="main" 
+                            placeholder="Tell your story..." style="height: 200px;" row="8" required>{{.Main}}</textarea>
+                        </div>
+        
+                        <div class="pt-3 text-center">
+                            <input type="submit" value="Update" class="btn btn-success">
+                        </div>
+                    {{end}}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="views/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

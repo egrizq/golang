@@ -37,6 +37,19 @@ func main() {
 	select1 := person1.Education
 	selection := category(select1)
 	fmt.Printf("rizq are %v\n", selection)
+
+	type category struct {
+		name string
+		password string
+	}
+	var fullname []category
+
+	fullname = append(fullname, category{
+		name: "rizq",
+		password: "ramadhan",
+	})
+
+	fmt.Println(fullname[0])
 }	
 
 func category(education string) string {
