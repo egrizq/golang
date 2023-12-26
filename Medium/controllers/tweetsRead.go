@@ -10,7 +10,7 @@ import (
 )
 
 // TODO MENAMPILKAN ISI ARTICLE
-func Update(w http.ResponseWriter, r *http.Request) {
+func Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		panic(err)
@@ -37,7 +37,8 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		itemSelect = append(itemSelect, item)
 	}
 
-	temp, err := template.ParseFiles("views/update.html")
+	// ganti ke update nanti
+	temp, err := template.ParseFiles("views/readTweets.html")
 	if err != nil {
 		panic(err)
 	}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        font-family: "cascadia mono";
+    }
+
+    .text {
+        color: black;
+    }
+
+    /* Remove the caret icon */
+    .dropdown-toggle::after {
+        content: none;
+    }
+
+    .alink {
+        text-decoration: none;
+        color: rgb(99, 96, 96);
+    }
+
+</style>
+
+<body>
+    <ul class="nav justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link text" href="/">For you</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text" href="/history">History</a>
+        </li>
+    </ul>
+
+    <div class="container-fluid" style="padding-top:5vh;">
+        <div class="row">
+            <div class="col-3"></div>
+
+            <div class="col-6">
+                <div class="text-end">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle alink" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          ◦◦◦
+                        </a>
+                        <ul class="dropdown-menu">
+                    {{range .Rows}}
+                          <li><a class="dropdown-item" href="/tweets/update?id={{.Id}}">Edit tweets</a></li>
+                          <li><a class="dropdown-item" href="/tweets/delete?id={{.Id}}">Delete tweets</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-2">
+                        <!-- <input type="hidden" name="id" value="{{.Id}}"> -->
+    
+                        <p class="h4">{{.Title}}</p>
+    
+                        <p>{{.Main}}</p>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
