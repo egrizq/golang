@@ -8,7 +8,8 @@ import (
 	"time"
 )
 
-func Tweets(w http.ResponseWriter, r *http.Request) {
+// TODO INSERTING A NEW TWEETS
+func TweetsPublish(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		panic(err)

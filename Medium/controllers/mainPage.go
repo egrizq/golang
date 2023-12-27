@@ -8,6 +8,7 @@ import (
 	"text/template"
 )
 
+// TODO SHOWING ALL TWEETS TO MAIN PAGE
 func ForYou(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.DB.Query("SELECT * FROM tweets")
 	if err != nil {
@@ -29,6 +30,7 @@ func ForYou(w http.ResponseWriter, r *http.Request) {
 		all = append(all, row)
 	}
 
+	// index.html == main page
 	temp, err := template.ParseFiles("views/index.html")
 	if err != nil {
 		panic(err)
@@ -39,5 +41,7 @@ func ForYou(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Main Page")
+
+	// todo excute data to html
 	temp.Execute(w, data)
 }

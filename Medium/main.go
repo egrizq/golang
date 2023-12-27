@@ -12,8 +12,8 @@ func main() {
 
 	http.HandleFunc("/", controllers.ForYou) // menampilkan semua arcticle yang ada
 
-	http.HandleFunc("/tweets", controllers.TweetsForm)     // input article
-	http.HandleFunc("/tweets/publish", controllers.Tweets) // publish article via form
+	http.HandleFunc("/tweets", controllers.TweetsWrite)           // input article
+	http.HandleFunc("/tweets/publish", controllers.TweetsPublish) // publish article via form
 
 	http.HandleFunc("/tweets/read", controllers.Read)                // membaca 1 article dalam For You
 	http.HandleFunc("/tweets/update", controllers.Update)            // menampilkan 1 article dalam bentuk input
