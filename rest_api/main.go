@@ -39,7 +39,7 @@ func main() {
 	router.GET("/product", func(ctx *gin.Context) {
 		var product []database.Product
 
-		// select * from product
+		// SELECT * FROM product
 		database.DB.Find(&product)
 
 		// sending an HTTP response with a status code of 200 (OK) along with a JSON payload containing information about a product
@@ -54,7 +54,7 @@ func main() {
 		// retrieve a parameter from the URL. Specifically, it's used to extract values from named parameters in the path of a URL.
 		id := ctx.Param("id")
 
-		// select * from product where "id" = id
+		// SELECT * FROM product WHERE "id" = id
 		if err := database.DB.First(&product, id).Error; err != nil {
 			// create an option for error
 			switch err {
@@ -77,56 +77,78 @@ func main() {
 
 	// todo create new data
 	router.POST("/product", func(ctx *gin.Context) {
+		// create variable to store the new data
 		var product database.Product
 
 		// used to parse and bind JSON data from the request body to a Go struct
 		if err := ctx.ShouldBindJSON(&product); err != nil {
+			// if error return the message in json
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
 
+		// INSERT INTO product(product_name, description, quantity) VALUES ("")
 		database.DB.Create(&product)
+
+		// sending an HTTP response with a status code of 200 (OK) along with a JSON payload containing information about a product
 		ctx.JSON(http.StatusOK, gin.H{"product": product})
 	})
 
 	// todo update the data
 	router.PUT("/product/:id", func(ctx *gin.Context) {
+		// create variable to store updated data
 		var product database.Product
+
+		// retrieve a parameter from the URL. Specifically, it's used to extract values from named parameters in the path of a URL.
 		id := ctx.Param("id")
 
+		// used to parse and bind JSON data from the request body to a Go struct
 		if err := ctx.ShouldBindJSON(&product); err != nil {
+			// if error return the message in json
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
 
+		// UPDATE product SET product_name = "", description = "", quantity = "" WHERE id = id
+		// if the id = 0 the statement return error
 		if database.DB.Model(&product).Where("id = ?", id).Updates(&product).RowsAffected == 0 {
+			// return the message in json
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "cannot update the data"})
 			return
 		}
 
+		// sending an HTTP response with a status code of 200 (OK) along with a JSON payload containing information about a product
 		ctx.JSON(http.StatusOK, gin.H{"product": "success update the data"})
 	})
 
 	// todo delete data from selected id
 	router.DELETE("/product/delete/:id", func(ctx *gin.Context) {
+		// create a variable to store he selected data from id
 		var product database.Product
 
+		// create variable type struct to get the id in json
 		var input struct {
 			Id json.Number
 		}
 
 		// used to parse and bind JSON data from the request body to a Go struct
 		if err := ctx.ShouldBindJSON(&input); err != nil {
+			// if the id did not found it return error
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
 
+		// extracting the integer value from a json.Number field (input.Id) and assigning it to the variable id.
 		id, _ := input.Id.Int64()
+		// DELETE FROM product WHERE id = id
+		// if id did not found it return error
 		if database.DB.Delete(&product, id).RowsAffected == 0 {
+			// the statement run when the id did not found
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "cannot delete the data"})
 			return
 		}
 
+		// sending an HTTP response with a status code of 200 (OK) along with a JSON payload containing information about a product
 		ctx.JSON(http.StatusOK, gin.H{"message": "success delete data"})
 	})
 
