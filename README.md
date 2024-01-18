@@ -8,3 +8,6 @@ The purpose of the folder are to create a build a simple note using golang as a 
 
 ### 3. rest_api
 Creating my first rest api using golang with mysql
+
+### 4. gin_gorm
+CRUD with gin as a http framework and using gorm to connect with database mysql
