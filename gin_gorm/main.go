@@ -12,6 +12,7 @@ func main() {
 	database.Connect()
 
 	router.LoadHTMLGlob("templates/*")
+	router.Static("/public", "./public")
 
 	router.GET("/", controllers.Views)
 	router.GET("/dashboard", controllers.Dashboard)
@@ -20,5 +21,5 @@ func main() {
 	router.POST("/dashboard/edit/update", controllers.UpdateData)
 	router.POST("/create", controllers.Create)
 
-	router.Run()
+	router.Run(":8000")
 }

@@ -6,6 +6,7 @@ type Data struct {
 	Name        string `form:"name"`
 	Produsen    string `form:"produsen"`
 	Description string `form:"description"`
+	File        string `form:"file"`
 	Quantity    int    `form:"quantity"`
 	Area        string `form:"area"`
 }
