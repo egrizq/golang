@@ -16,6 +16,25 @@ func Views(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "index.html", nil)
 }
 
+func Login(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "login.html", nil)
+}
+
+func LoginForm(ctx *gin.Context) {
+	var data model.Data
+	var name struct {
+		Name string `form:"name"`
+	}
+
+	if err := ctx.ShouldBind(&name); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	database.DB.Where("name = ?", name.Name).Find(&data)
+	ctx.Redirect(http.StatusSeeOther, "/dashboard")
+}
+
 func Create(ctx *gin.Context) {
 	var createData model.Data
 	var tempData struct {
@@ -43,6 +62,7 @@ func Create(ctx *gin.Context) {
 		return
 	}
 
+	// saving img name
 	createData.File = file.Filename
 
 	createData.Name = tempData.Name
@@ -66,7 +86,8 @@ func Edit(ctx *gin.Context) {
 	idQuery := ctx.Query("id")
 	id, err := strconv.Atoi(idQuery)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		// ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"message": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "cannot bind"})
 		return
 	}
 
@@ -80,12 +101,16 @@ func UpdateData(ctx *gin.Context) {
 	var newData model.Data
 
 	if err := ctx.ShouldBind(&newData); err != nil {
+		// ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"message": err.Error()})
+
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
 	id := newData.ID
 	if err := database.DB.Save(&newData).Where("id = ?", id).Error; err != nil {
+		// ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"message": err.Error()})
+
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -99,6 +124,8 @@ func Delete(ctx *gin.Context) {
 	idQuery := ctx.Query("id")
 	id, err := strconv.Atoi(idQuery)
 	if err != nil {
+		// ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"message": "error"})
+
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -108,6 +135,8 @@ func Delete(ctx *gin.Context) {
 	database.DB.Find(&deleteData, id)
 	imagePath := fmt.Sprintf("public/%v", deleteData.File)
 	if err := os.Remove(imagePath); err != nil {
+		// ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"message": err.Error()})
+
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
 	}
