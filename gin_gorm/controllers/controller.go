@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"fmt"
 	"gin_gorm/database"
 	"gin_gorm/model"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -98,9 +100,17 @@ func Delete(ctx *gin.Context) {
 	id, err := strconv.Atoi(idQuery)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
-	var deleteData []model.Data
+	var deleteData model.Data
+
+	database.DB.Find(&deleteData, id)
+	imagePath := fmt.Sprintf("public/%v", deleteData.File)
+	if err := os.Remove(imagePath); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
 
 	database.DB.Delete(&deleteData, id)
 	ctx.Redirect(http.StatusSeeOther, "/dashboard")
