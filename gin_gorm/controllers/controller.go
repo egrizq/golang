@@ -34,22 +34,23 @@ func LoginForm(ctx *gin.Context) {
 	var data model.Data
 
 	if err := ctx.ShouldBind(&name); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		return
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
+		// ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		// return
 	}
 
 	result := database.DB.Where("name = ?", name.Name).First(&data).Error
 
 	// check if the query is not 0
 	if errors.Is(result, gorm.ErrRecordNotFound) {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, "name is not found")
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Name is not found"})
 		return
 	}
 
 	// storing the session
 	session, err := store.Get(ctx.Request, "session-key")
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 		return
 	}
 
@@ -72,19 +73,19 @@ func Create(ctx *gin.Context) {
 	// parse the img from HTML
 	file, err := ctx.FormFile("file")
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "cannot bind file"})
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "cannot bind file"})
 		return
 	}
 
 	// saving the file into folder public
 	filename := filepath.Join("public", file.Filename)
 	if err := ctx.SaveUploadedFile(file, filename); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "cannot save the file"})
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "cannot save file"})
 		return
 	}
 
 	if err := ctx.ShouldBind(&tempData); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "cannot bind"})
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "cannot bind"})
 		return
 	}
 
@@ -103,24 +104,19 @@ func Create(ctx *gin.Context) {
 }
 
 func Dashboard(ctx *gin.Context) {
-	session, err := store.Get(ctx.Request, "session-key")
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		return
-	}
+	session, _ := store.Get(ctx.Request, "session-key")
 
 	// get the session
 	username, ok := session.Values["username"].(string)
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		ctx.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "Authentication required"})
 		return
 	}
+	log.Println(username)
 
 	var allData []model.Data
-
 	database.DB.Where("name = ?", username).Find(&allData)
 
-	log.Println(username)
 	ctx.HTML(http.StatusOK, "dashboard.html", gin.H{"message": allData, "username": username})
 }
 
@@ -128,11 +124,17 @@ func Edit(ctx *gin.Context) {
 	idQuery := ctx.Query("id")
 	id, err := strconv.Atoi(idQuery)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "cannot bind"})
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "cannot bind"})
 		return
 	}
 
 	var data []model.Data
+
+	result := database.DB.Where("id = ?", id).First(&data).Error
+	if errors.Is(result, gorm.ErrRecordNotFound) {
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "record not found"})
+		return
+	}
 
 	database.DB.Find(&data, id)
 	ctx.HTML(http.StatusOK, "update.html", gin.H{"message": data})
@@ -142,13 +144,13 @@ func UpdateData(ctx *gin.Context) {
 	var newData model.Data
 
 	if err := ctx.ShouldBind(&newData); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"message": err.Error()})
+		// return
 	}
 
 	id := newData.ID
 	if err := database.DB.Save(&newData).Where("id = ?", id).Error; err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 		return
 	}
 
@@ -159,7 +161,7 @@ func Delete(ctx *gin.Context) {
 	idQuery := ctx.Query("id")
 	id, err := strconv.Atoi(idQuery)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 		return
 	}
 
@@ -168,7 +170,7 @@ func Delete(ctx *gin.Context) {
 	database.DB.Find(&deleteData, id)
 	imagePath := fmt.Sprintf("public/%v", deleteData.File)
 	if err := os.Remove(imagePath); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 		return
 	}
 
@@ -179,7 +181,7 @@ func Delete(ctx *gin.Context) {
 func ClearSession(ctx *gin.Context) {
 	session, err := store.Get(ctx.Request, "session-key")
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 		return
 	}
 

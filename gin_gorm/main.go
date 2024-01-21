@@ -14,8 +14,8 @@ func main() {
 	router.LoadHTMLGlob("templates/*")
 	router.Static("/public", "./public")
 
-	router.GET("/", controllers.Login)                // views login
-	router.POST("/login/form", controllers.LoginForm) // login
+	router.GET("/", controllers.Login)                 // views login
+	router.POST("/search/form", controllers.LoginForm) // login
 
 	router.GET("/add", controllers.Views)
 	router.GET("/dashboard", controllers.Dashboard)
