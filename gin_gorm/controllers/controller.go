@@ -35,16 +35,17 @@ func LoginForm(ctx *gin.Context) {
 
 	if err := ctx.ShouldBind(&name); err != nil {
 		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
-		// ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		// return
+		return
 	}
 
-	result := database.DB.Where("name = ?", name.Name).First(&data).Error
+	if name.Name != "admin" {
+		result := database.DB.Where("name = ?", name.Name).First(&data).Error
 
-	// check if the query is not 0
-	if errors.Is(result, gorm.ErrRecordNotFound) {
-		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Name is not found"})
-		return
+		// check if the query is not 0
+		if errors.Is(result, gorm.ErrRecordNotFound) {
+			ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Name is not found"})
+			return
+		}
 	}
 
 	// storing the session
@@ -61,6 +62,15 @@ func LoginForm(ctx *gin.Context) {
 }
 
 func Create(ctx *gin.Context) {
+	// get session
+	session, _ := store.Get(ctx.Request, "session-key")
+
+	_, ok := session.Values["username"].(string)
+	if !ok {
+		ctx.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "Authentication required"})
+		return
+	}
+
 	var createData model.Data
 	var tempData struct {
 		Name        string `form:"name"`
@@ -112,10 +122,15 @@ func Dashboard(ctx *gin.Context) {
 		ctx.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "Authentication required"})
 		return
 	}
+
 	log.Println(username)
 
 	var allData []model.Data
-	database.DB.Where("name = ?", username).Find(&allData)
+	if username != "admin" {
+		database.DB.Where("name = ?", username).Find(&allData)
+	} else {
+		database.DB.Find(&allData)
+	}
 
 	ctx.HTML(http.StatusOK, "dashboard.html", gin.H{"message": allData, "username": username})
 }
