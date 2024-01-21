@@ -103,10 +103,6 @@ func Create(ctx *gin.Context) {
 }
 
 func Dashboard(ctx *gin.Context) {
-	var allData []model.Data
-
-	database.DB.Find(&allData)
-
 	session, err := store.Get(ctx.Request, "session-key")
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
@@ -119,6 +115,10 @@ func Dashboard(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
+	var allData []model.Data
+
+	database.DB.Where("name = ?", username).Find(&allData)
 
 	log.Println(username)
 	ctx.HTML(http.StatusOK, "dashboard.html", gin.H{"message": allData, "username": username})
@@ -174,4 +174,16 @@ func Delete(ctx *gin.Context) {
 
 	database.DB.Delete(&deleteData, id)
 	ctx.Redirect(http.StatusSeeOther, "/dashboard")
+}
+
+func ClearSession(ctx *gin.Context) {
+	session, err := store.Get(ctx.Request, "session-key")
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	delete(session.Values, "username")
+	session.Save(ctx.Request, ctx.Writer)
+	ctx.Redirect(http.StatusSeeOther, "/")
 }

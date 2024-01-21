@@ -14,13 +14,14 @@ func main() {
 	router.LoadHTMLGlob("templates/*")
 	router.Static("/public", "./public")
 
-	router.GET("/login", controllers.Login)
-	router.POST("/login/form", controllers.LoginForm)
+	router.GET("/", controllers.Login)                // views login
+	router.POST("/login/form", controllers.LoginForm) // login
 
-	router.GET("/", controllers.Views)
+	router.GET("/add", controllers.Views)
 	router.GET("/dashboard", controllers.Dashboard)
 	router.GET("/dashboard/edit", controllers.Edit)
 	router.GET("/dashboard/delete", controllers.Delete)
+	router.GET("/logout", controllers.ClearSession)
 	router.POST("/dashboard/edit/update", controllers.UpdateData)
 	router.POST("/create", controllers.Create)
 
