@@ -62,14 +62,14 @@ func LoginForm(ctx *gin.Context) {
 }
 
 func Create(ctx *gin.Context) {
-	// get session
-	session, _ := store.Get(ctx.Request, "session-key")
 
-	_, ok := session.Values["username"].(string)
-	if !ok {
-		ctx.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "Authentication required"})
-		return
-	}
+	// get session
+	// session, _ := store.Get(ctx.Request, "session-key")
+	// _, ok := session.Values["username"].(string)
+	// if !ok {
+	// 	ctx.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "Authentication required"})
+	// 	return
+	// }
 
 	var createData model.Data
 	var tempData struct {
@@ -110,13 +110,13 @@ func Create(ctx *gin.Context) {
 	createData.Quantity = tempData.Quantity
 
 	database.DB.Create(&createData)
-	ctx.Redirect(http.StatusSeeOther, "/dashboard")
+	ctx.Redirect(http.StatusSeeOther, "/")
 }
 
 func Dashboard(ctx *gin.Context) {
-	session, _ := store.Get(ctx.Request, "session-key")
 
 	// get the session
+	session, _ := store.Get(ctx.Request, "session-key")
 	username, ok := session.Values["username"].(string)
 	if !ok {
 		ctx.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "Authentication required"})
@@ -126,12 +126,15 @@ func Dashboard(ctx *gin.Context) {
 	log.Println(username)
 
 	var allData []model.Data
+
 	if username != "admin" {
-		database.DB.Where("name = ?", username).Find(&allData)
+		database.DB.Where("name = ?", username).Find(&allData) // showing data by name
 	} else {
-		database.DB.Find(&allData)
+		database.DB.Find(&allData) // showing all the data
 	}
 
+	log.Println(allData)
+	fmt.Println(len(allData))
 	ctx.HTML(http.StatusOK, "dashboard.html", gin.H{"message": allData, "username": username})
 }
 
@@ -160,7 +163,7 @@ func UpdateData(ctx *gin.Context) {
 
 	if err := ctx.ShouldBind(&newData); err != nil {
 		ctx.HTML(http.StatusBadRequest, "error.html", gin.H{"message": err.Error()})
-		// return
+		return
 	}
 
 	id := newData.ID
@@ -202,5 +205,6 @@ func ClearSession(ctx *gin.Context) {
 
 	delete(session.Values, "username")
 	session.Save(ctx.Request, ctx.Writer)
+
 	ctx.Redirect(http.StatusSeeOther, "/")
 }
