@@ -33,8 +33,7 @@ func main() {
 		fmt.Println("temprature:", math.Round(temp), "°C")
 	}
 
-	duration := time.Since(start)
-	fmt.Println("total duration:", duration)
+	fmt.Println("total duration:", time.Since(start))
 }
 
 func timer(cities string, resultCh chan<- float64, wg *sync.WaitGroup) {
@@ -46,9 +45,8 @@ func timer(cities string, resultCh chan<- float64, wg *sync.WaitGroup) {
 		} `json:"main"`
 	}
 
-	var api string = "https://api.openweathermap.org/data/2.5/weather?q=%s&APPID=%s"
 	var key string = "8fba757e84fe4783e2bb8ab93aa117c3"
-	url := fmt.Sprintf(api, cities, key)
+	url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?q=%s&APPID=%s", cities, key)
 
 	response, err := http.Get(url)
 	if err != nil {

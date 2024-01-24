@@ -18,12 +18,11 @@ func main() {
 		} `json:"main"`
 	}
 
-	const api string = "https://api.openweathermap.org/data/2.5/weather?q=%s&APPID=%s"
-	const key string = "8fba757e84fe4783e2bb8ab93aa117c3"
+	var key string = "8fba757e84fe4783e2bb8ab93aa117c3"
 	cities := []string{"Bekasi", "Jakarta", "Bali"}
 
 	for _, city := range cities {
-		url := fmt.Sprintf(api, city, key)
+		url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?q=%s&APPID=%s", city, key)
 
 		response, err := http.Get(url)
 		if err != nil {
@@ -40,6 +39,5 @@ func main() {
 		fmt.Println("temprature:", math.Round(temprature), "°C")
 	}
 
-	duration := time.Since(start)
-	fmt.Println("total duration:", duration)
+	fmt.Println("total duration:", time.Since(start))
 }
