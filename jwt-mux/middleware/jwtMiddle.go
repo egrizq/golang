@@ -13,7 +13,7 @@ func JWTmiddle(next http.Handler) http.Handler {
 		cookie, err := r.Cookie("token")
 		if err != nil {
 			if err == http.ErrNoCookie {
-				fmt.Fprintf(w, "error cookie: %s", err.Error())
+				fmt.Fprintf(w, "error cookie: %s", err)
 				return
 			}
 		}
@@ -28,12 +28,12 @@ func JWTmiddle(next http.Handler) http.Handler {
 		})
 
 		if err != nil {
-			fmt.Fprint(w, "err parsing token")
+			fmt.Fprintf(w, "err parsing token: %s", err)
 			return
 		}
 
 		if !token.Valid {
-			fmt.Fprint(w, "err token invalid")
+			fmt.Fprintf(w, "err token invalid: %s", err)
 			return
 		}
 
