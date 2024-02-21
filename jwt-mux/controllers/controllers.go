@@ -18,12 +18,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// get data from body
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Error parsing body: %s", err)
-		log.Printf("error parsing body: %s", err)
 		return
 	}
 	defer r.Body.Close()
+
+	if user.Id == 0 || user.Email == "" || user.Fullname == "" || user.Password == "" {
+		fmt.Fprintf(w, "User data cannot be null")
+		return
+	}
 
 	// todo hash password
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -38,9 +41,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Error parsing body: %s", err)
-		log.Printf("error parsing body: %s", err)
 		return
 	}
 	defer r.Body.Close()
