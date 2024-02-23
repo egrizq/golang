@@ -1,2 +1,4 @@
 .env
 temp
+build-errors.log
+main.exe

@@ -3,14 +3,12 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"jwt-mux/config"
 	"jwt-mux/database"
+	"jwt-mux/helper"
 	"jwt-mux/models"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -31,16 +29,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	user.Password = string(hashPassword)
 
 	query := "INSERT INTO mydata(id, fullname, email, password) VALUES ($1, $2, $3, $4)"
-	_, err = database.DB.Exec(query, user.Id, user.Fullname, user.Email, user.Password)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Error inserting data: %s", err)
-		log.Printf("Error inserting data: %s", err)
-		return
-	}
-
-	fmt.Fprintf(w, "fullname: %s & email: %s", user.Fullname, user.Email)
-	log.Println("Register success!")
+	helper.RegisterData(w, query, user.Id, user.Fullname, user.Email, user.Password)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -89,32 +78,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// todo jwt
-	expTime := time.Now().Add(time.Second * 60)
-	claims := &config.JWTClaim{
-		Email: userInput.Email,
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "golang-otp",
-			ExpiresAt: jwt.NewNumericDate(expTime),
-		},
-	}
-
-	// declare tokens
-	tokenAlgo := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// signed token
-	token, err := tokenAlgo.SignedString(config.JWT_KEY)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("Error in token: %s", err)
-		return
-	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "token",
-		Path:     "/",
-		Value:    token,
-		HttpOnly: true,
-	})
+	helper.JwtGenerate(w, userInput.Email)
 
 	fmt.Fprintf(w, "Login success!")
 	log.Println("Login success!")
@@ -156,18 +120,6 @@ func Alldata(w http.ResponseWriter, r *http.Request) {
 		allUser = append(allUser, dataUser)
 	}
 
-	log.Println(allUser)
-	jsonData, err := json.Marshal(allUser)
-	if err != nil {
-		log.Printf("error turn data to json: %s", err.Error())
-		fmt.Fprintf(w, "error turn data to json: %s", err.Error())
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if _, err := w.Write(jsonData); err != nil {
-		log.Printf("error app: %s", err.Error())
-		fmt.Fprintf(w, "error app: %s", err.Error())
-		return
-	}
+	helper.DataToJson(w, allUser)
+	log.Println("Success return all data!")
 }
